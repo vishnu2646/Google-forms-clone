@@ -1,0 +1,75 @@
+<section class="dashboard-section">
+    <div class="creation-wrapper">
+        <div class="header">
+            <p class="roboto-regular">Start a new form</p>
+            <div></div>
+        </div>
+        <div class="templates">
+            <div class="create" (click)="handleCreateForm()">
+                <div class="creation-actions">
+                    <div class="active">
+                        <img src="https://ssl.gstatic.com/docs/templates/thumbnails/forms-blank-googlecolors.png" alt="add" />
+                    </div>
+                    <span>
+                        Blank Form
+                    </span>
+                </div>
+            </div>
+            <div class="recents">
+                <div class="creation-actions">
+                    <div>
+                        <img src="https://ssl.gstatic.com/docs/templates/thumbnails/1xQF3s6EP0d58H-XJ7R440OpREKo4KqEapa0mkw43RPE_400_1.png" alt="add" />
+                    </div>
+                    <span>
+                        Contact Form
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="recent-forms-list">
+        <div class="recent-header">
+            <div class="title roboto-light">
+                <p>Recent Forms</p>
+            </div>
+            <div class="recent-actions">
+                <div class="view-type">
+                    @if(selectedListType === 'view_list') {
+                        <button mat-icon-button (click)="handleUpdateViewType('grid_view')">
+                            <mat-icon>view_list</mat-icon>
+                        </button>
+                    } @else {
+                        <button mat-icon-button (click)="handleUpdateViewType('view_list')">
+                            <mat-icon>grid_view</mat-icon>
+                        </button>
+                    }
+                </div>
+                <div class="sort-by">
+                    <button mat-icon-button [matMenuTriggerFor]="menu">
+                        <mat-icon>sort_by_alpha</mat-icon>
+                    </button>
+                    <mat-menu #menu="matMenu">
+                        @for (option of options; track $index) {
+                            <button mat-menu-item (click)="handleUpdateSortOption(option.title)">
+                                @if(option.isChecked) {
+                                    <mat-icon>check</mat-icon>
+                                }
+                                <span>{{ option.title }}</span>
+                            </button>
+                        }
+                    </mat-menu>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="recent-contents">
+        <mat-card>
+            <mat-card-content>
+                <div class="no-content">
+                    <p>No forms yet</p>
+                    <p>Select a blank form or choose another template above to get started.</p>
+                </div>
+            </mat-card-content>
+        </mat-card>
+    </div>
+</section>

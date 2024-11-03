@@ -1,0 +1,196 @@
+<div class="container">
+    <form [formGroup]="createForm" (ngSubmit)="onSubmit()">
+        <!-- Form Title and Description -->
+        <mat-card class="header-card">
+            <mat-card-content>
+                <mat-form-field appearance="fill" class="full-width">
+                    <mat-label>Form Title</mat-label>
+                    <input matInput formControlName="title" required />
+                    <mat-error *ngIf="createForm.get('title')?.invalid && createForm.get('title')?.touched">
+                        Title is required.
+                    </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="fill" class="full-width">
+                    <mat-label>Description</mat-label>
+                    <textarea matInput formControlName="description"></textarea>
+                </mat-form-field>
+            </mat-card-content>
+        </mat-card>
+
+        <!-- Questions Section -->
+        <div formArrayName="questions">
+            <div
+                *ngFor="let question of questions.controls;
+                let i = index"
+                [formGroupName]="i"
+                class="question"
+            >
+                <mat-card class="questions-card" [ngClass]="{'active-card': activeQuestionIndex === i}">
+                    <mat-card-content>
+                        <div class="question-section">
+                            <ng-container *ngIf="question.get('isEditing')?.value; else questionPreview">
+                                <mat-form-field appearance="fill">
+                                    <mat-label>Question Text</mat-label>
+                                    <input matInput formControlName="question_text" required (focus)="setActiveQuestion(i)" />
+                                    <mat-error *ngIf="question.get('question_text')?.invalid && question.get('question_text')?.touched">
+                                        Question text is required.
+                                    </mat-error>
+                                </mat-form-field>
+                            </ng-container>
+                            <ng-template #questionPreview>
+                                <p (click)="editQuestion(i)">{{ question.get('question_text')?.value }}
+                                    @if(question.get('required')?.value) {
+                                        <span class="required">*</span>
+                                    }
+                                </p>
+                            </ng-template>
+
+                            <!-- Question Type Select -->
+                            @if(activeQuestionIndex === i) {
+                                <mat-form-field appearance="fill">
+                                    <mat-label>Question Type</mat-label>
+                                    <mat-select formControlName="question_type" (selectionChange)="onQuestionTypeChange(i)">
+                                        <mat-option *ngFor="let type of types" [value]="type.value">{{ type.viewValue }}</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            }
+                        </div>
+
+                        <!-- Dynamic Question Input based on type -->
+                        <ng-container [ngSwitch]="question.get('question_type')?.value">
+
+                            <!-- Multiple Choice -->
+                            <div *ngSwitchCase="'multiple_choice'">
+                                <ng-container *ngIf="question.get('isEditingOptions')?.value; else optionsPreview">
+                                    <div formArrayName="options" class="options-container">
+                                        <div *ngFor="let option of getOptions(i).controls; let j = index" class="option-item">
+                                            <mat-form-field appearance="fill" class="full-width">
+                                                <mat-label>Option {{ j + 1 }}</mat-label>
+                                                <input matInput [formControlName]="j" />
+                                            </mat-form-field>
+                                            <button mat-icon-button type="button" (click)="removeOption(i, j)">
+                                                <mat-icon>close</mat-icon>
+                                            </button>
+                                        </div>
+                                        <button mat-raised-button color="primary" type="button" (click)="addOption(i)">
+                                            Add Option
+                                        </button>
+                                        <button mat-raised-button color="primary" type="button" (click)="saveOptions(i)">
+                                            Save Options
+                                        </button>
+                                    </div>
+                                </ng-container>
+                                <ng-template #optionsPreview>
+                                    <mat-radio-group class="options">
+                                        <mat-radio-button *ngFor="let option of getOptions(i).controls" [value]="option.value">
+                                            {{ option.value }}
+                                        </mat-radio-button>
+                                    </mat-radio-group>
+                                    <button mat-raised-button color="primary" type="button" (click)="editOptions(i)">Edit Options</button>
+                                </ng-template>
+                            </div>
+
+                            <!-- Text Input -->
+                            <div *ngSwitchCase="'text'">
+                                <mat-form-field appearance="fill" class="full-width">
+                                    <mat-label>Your Answer</mat-label>
+                                    <input matInput placeholder="Answer here..." disabled />
+                                </mat-form-field>
+                            </div>
+
+                            <!-- Textarea Input -->
+                            <div *ngSwitchCase="'textarea'">
+                                <mat-form-field appearance="fill" class="full-width">
+                                    <mat-label>Your Answer</mat-label>
+                                    <textarea matInput placeholder="Answer here..."></textarea>
+                                </mat-form-field>
+                            </div>
+
+                            <div *ngSwitchCase="'checkbox'">
+                                <ng-container *ngIf="question.get('isEditingOptions')?.value; else checkboxOptionsPreview">
+                                    <div formArrayName="options" class="options-container">
+                                        <div *ngFor="let option of getOptions(i).controls; let j = index" class="option-item">
+                                            <mat-form-field appearance="fill" class="full-width">
+                                                <mat-label>Option {{ j + 1 }}</mat-label>
+                                                <input matInput [formControlName]="j" />
+                                            </mat-form-field>
+                                            <button mat-icon-button type="button" (click)="removeOption(i, j)">
+                                                <mat-icon>close</mat-icon>
+                                            </button>
+                                        </div>
+                                        <button mat-raised-button color="primary" type="button" (click)="addOption(i)">
+                                            Add Option
+                                        </button>
+                                        <button mat-raised-button color="primary" type="button" (click)="saveOptions(i)">
+                                            Save Options
+                                        </button>
+                                    </div>
+                                </ng-container>
+                                <ng-template #checkboxOptionsPreview>
+                                    <div *ngFor="let option of getOptions(i).controls" class="options">
+                                        <mat-checkbox>{{ option.value }}</mat-checkbox>
+                                    </div>
+                                    <button mat-raised-button color="primary" type="button" (click)="editOptions(i)">Edit Options</button>
+                                </ng-template>
+                            </div>
+
+                            <!-- Dropdown Input -->
+                            <div *ngSwitchCase="'dropdown'">
+                                <div formArrayName="options" class="options-container">
+                                    <div *ngFor="let option of getOptions(i).controls; let j = index">
+                                        <mat-form-field appearance="fill" class="full-width">
+                                            <mat-label>Option {{ j + 1 }}</mat-label>
+                                            <input matInput [formControlName]="j" placeholder="Option {{ j + 1 }}" />
+                                        </mat-form-field>
+                                        <button mat-icon-button type="button" (click)="removeOption(i, j)">
+                                            <mat-icon>close</mat-icon>
+                                        </button>
+                                    </div>
+                                    <button mat-raised-button color="primary" type="button" (click)="addOption(i)">
+                                        Add Option
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Date Input -->
+                            <div *ngSwitchCase="'date'">
+                                <mat-form-field appearance="fill" class="full-width">
+                                    <mat-label>Date</mat-label>
+                                    <input matInput type="date" disabled />
+                                </mat-form-field>
+                            </div>
+
+                            <!-- Time Input -->
+                            <div *ngSwitchCase="'time'">
+                                <mat-form-field appearance="fill" class="full-width">
+                                    <mat-label>Time</mat-label>
+                                    <input matInput type="time" disabled />
+                                </mat-form-field>
+                            </div>
+
+                        </ng-container>
+                    </mat-card-content>
+
+                    <mat-card-footer>
+                        <div class="footer">
+                            <div class="actions">
+                                <button mat-icon-button type="button" (click)="removeQuestion(i)">
+                                    <mat-icon>content_copy</mat-icon>
+                                </button>
+                                <!-- Delete Question Button -->
+                                <button mat-icon-button type="button" (click)="removeQuestion(i)">
+                                    <mat-icon>delete</mat-icon>
+                                </button>
+                            </div>
+                            <mat-slide-toggle labelPosition="before" (change)="toggleRequired($event, i)">Required</mat-slide-toggle>
+                        </div>
+                    </mat-card-footer>
+                </mat-card>
+            </div>
+        </div>
+        <!-- Add Question Button -->
+        <button mat-raised-button color="primary" type="button" (click)="addQuestion()">Add Question</button>
+        <button type="button" mat-raised-button color="primary" (click)="onSubmit()" [disabled]="createForm.invalid">Submit</button>
+    </form>
+</div>

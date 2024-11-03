@@ -1,0 +1,60 @@
+.content-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    height: 100%;
+
+    .quote {
+
+        .quote-title {
+            text-align: center;
+            font-size: 60px;
+            line-height: 72px;
+        }
+
+        .quote-description {
+            text-align: center;
+            font-size: 20px;
+            color: var(--primary);
+        }
+    }
+
+    .actions {
+        padding: 20px;
+
+        button {
+            &:first-child {
+                margin-right: 20px;
+            }
+        }
+    }
+
+
+    .links {
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+
+        p {
+            margin-bottom: 0px;
+            color: var(--primary);
+        }
+    }
+}
+
+@media (max-width: 767px) {
+    .content-section {
+        .quote {
+            .quote-title {
+                font-size: 40px;
+                line-height: 42px;
+            }
+
+            .quote-description {
+                font-size: 14px;
+            }
+        }
+    }
+}

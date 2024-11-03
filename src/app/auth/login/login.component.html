@@ -1,0 +1,39 @@
+<main class="main">
+	<div class="container">
+		<section class="wrapper">
+			<div class="heading">
+				<h1 class="text text-large">Sign In</h1>
+				<p class="text text-normal">New user?
+                    <span>
+                        <a href="#" class="text text-links">Create an account</a>
+                    </span>
+				</p>
+			</div>
+			<form name="signin" class="form">
+				<mat-form-field>
+                    <mat-label>Username</mat-label>
+                    <input matInput placeholder="Enter Username">
+                </mat-form-field>
+				<mat-form-field>
+                    <mat-label>Password</mat-label>
+                    <input matInput type="password" placeholder="Enter Password">
+                </mat-form-field>
+				<div class="auth-actions">
+					<a href="#" class="text text-links">Forgot Password</a>
+					<button mat-raised-button color="primary">Sign In</button>
+				</div>
+			</form>
+			<div class="striped">
+				<span class="striped-line"></span>
+				<span class="striped-text">Or</span>
+				<span class="striped-line"></span>
+			</div>
+			<div class="method">
+				<button type="button" class="login-with-google-btn">
+                    <img src="../../../assets/login-logo.png" alt="login-logo">
+                    Sign in with Google
+                </button>
+			</div>
+		</section>
+	</div>
+</main>
