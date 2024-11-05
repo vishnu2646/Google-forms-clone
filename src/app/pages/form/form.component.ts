@@ -15,11 +15,6 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRadioModule } from '@angular/material/radio';
 import { QuestioncardComponent } from '../../components';
 
-interface Type {
-    value: string;
-    viewValue: string;
-}
-
 @Component({
     selector: 'app-form',
     standalone: true,
@@ -31,14 +26,14 @@ interface Type {
         MatCardModule,
         MatInputModule,
         MatFormFieldModule,
-        MatSelectModule,
         MatButtonModule,
         MatIconModule,
+        MatRadioModule,
+        MatSelectModule,
         MatSlideToggleModule,
         MatDividerModule,
         MatMenuModule,
         MatCheckboxModule,
-        MatRadioModule
     ],
     templateUrl: './form.component.html',
     styleUrl: './form.component.scss'
@@ -47,20 +42,11 @@ export class FormComponent {
 
     public createForm: FormGroup;
 
-    public selectedValue: String = '';
-
-    public types: Type[] = [
-        {value: 'text', viewValue: 'Shot Answer'},
-        {value: 'textarea', viewValue: 'Paragraph'},
-        {value: 'multiple_choice', viewValue: 'Multiple Choices'},
-        {value: 'checkbox', viewValue: 'Checkboxes'},
-        {value: 'dropdown', viewValue: 'Dropdown'},
-        {value: 'file_upload', viewValue: 'File Upload'},
-        {value: 'date', viewValue: 'Date'},
-        {value: 'time', viewValue: 'Time'},
-    ];
-
     public activeQuestionIndex: number | null = null;
+
+    public question: FormGroup | null = null;
+
+    public newQuestions: any[] = [];
 
     /**
      * Getter for questions FormArray
@@ -79,6 +65,14 @@ export class FormComponent {
         return question.get('options') as FormArray;
     }
 
+    public addOption(event: number | null): void {
+        if(event === null) {
+            return;
+        }
+        const options = this.questions.at(event).get('options') as FormArray; // Cast to FormArray
+        options.push(this.fb.control(''));
+    }
+
     constructor(private formService: FormService, private fb: FormBuilder) {
         this.createForm = this.fb.group({
             title: ['Untiled form', Validators.required],
@@ -87,22 +81,8 @@ export class FormComponent {
         });
     }
 
-    /**
-     * A callback method that is invoked immediately after the default change detector,
-     * has checked the directive's data-bound properties for the first time
-     */
-    public ngOnInit(): void {
-        this.addQuestion();
-    }
-
-    public setActiveQuestion(index: number): void {
-        this.activeQuestionIndex = index;
-    }
-
-    public saveQuestion(index: number) {
-        const question = this.questions.at(index);
-        question.get('isEditing')?.setValue(false);
-        this.activeQuestionIndex = null;
+    public saveQuestion(question: FormGroup) {
+        this.newQuestions.push(question.value);
     }
 
     /**
@@ -118,37 +98,19 @@ export class FormComponent {
             required: false
         });
         this.questions.push(questionGroup);
+    }
+
+    public getQuestionGroup(index: number): FormGroup {
+        return this.questions.at(index) as FormGroup;
+    }
+
+    public removeQuestion(event: number | null) {
+        this.activeQuestionIndex = event;
+
         if(this.activeQuestionIndex !== null) {
-            this.saveQuestion(this.activeQuestionIndex);
+            this.questions.removeAt(this.activeQuestionIndex)
         }
-    }
 
-    public onQuestionTypeChange(index: number) {
-        const question = this.questions.at(index);
-        if (this.isMultipleChoiceOrCheckbox(question.get('question_type')?.value)) {
-            this.addOption(index);
-            question.get('isEditingOptions')?.setValue(true);
-        } else {
-            question.get('options')?.reset();
-        }
-    }
-
-    public isMultipleChoiceOrCheckbox(type: string): boolean {
-        return type === 'multiple_choice' || type === 'checkbox';
-    }
-
-    public editQuestion(index: number) {
-        const question = this.questions.at(index);
-        question.get('isEditing')?.setValue(true);
-        this.setActiveQuestion(index);
-    }
-
-    /**
-     * Remove a question
-     * @param index The index of the question
-     */
-    public removeQuestion(index: number) {
-        this.questions.removeAt(index);
         this.activeQuestionIndex = null; // Reset active question index
 
         // If no questions are left, clear the form array explicitly
@@ -157,63 +119,9 @@ export class FormComponent {
         }
     }
 
-    /**
-     * Add an option to a question
-     * @param questionIndex The index of the question
-     */
-    public addOption(questionIndex: number) {
-        const options = this.questions.at(questionIndex).get('options') as FormArray; // Cast to FormArray
-        options.push(this.fb.control(''));
-    }
-
-    public editOptions(questionIndex: number) {
-        const question = this.questions.at(questionIndex);
-        question.get('isEditingOptions')?.setValue(true);
-    }
-
-    /**
-     * Remove an option from a question
-     * @param questionIndex index of the question
-     * @param optionIndex index of the option
-     */
-    public removeOption(questionIndex: number, optionIndex: number) {
-        const options = this.questions.at(questionIndex).get('options') as FormArray; // Cast to FormArray
-        options.removeAt(optionIndex);
-    }
-
-    public saveOptions(questionIndex: number) {
-        const question = this.questions.at(questionIndex);
-        question.get('isEditingOptions')?.setValue(false);
-    }
-
-    /**
-     * Method to make the question to be required or Answered compulsory
-     * @param event Event emitted
-     * @param index index of the question
-     */
-    public toggleRequired(event: any, index: number) {
-        const question = this.questions.at(index);
-        const questionTextControl = question.get('question_text');
-        const isRequired = event.checked;
-
-        question.get('required')?.setValue(isRequired);  // Set required field in form data
-
-        if (isRequired) {
-            questionTextControl?.setValidators(Validators.required);
-        } else {
-            questionTextControl?.clearValidators();
-        }
-        questionTextControl?.updateValueAndValidity();
-    }
-
     public onSubmit() {
         if (this.createForm.valid) {
             console.log('Submit', this.createForm.value);
-            // this.formService.createForm(this.createForm.value).subscribe(res => {
-            //     console.log('Form created successfully:', res);
-            // }, err => {
-            //     console.error('Error creating form:', err);
-            // });
         }
     }
 }
