@@ -1,0 +1,12 @@
+.questions {
+    margin-bottom: 20px;
+
+    mat-card {
+        mat-card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: end;
+            flex-direction: row-reverse;
+        }
+    }
+}

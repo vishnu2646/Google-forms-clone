@@ -1,0 +1,44 @@
+<div [formGroup]="question">
+    <ng-container *ngIf="question?.value['isEditingOptions'] && isCheckBoxOrMultipleChoise; else optionsPreview">
+        <div formArrayName="options" class="options-container">
+            <div *ngFor="let option of getOptions()?.controls; let j = index" class="option-item">
+                <mat-form-field appearance="fill" class="options-list">
+                    <mat-label>Option {{ j + 1 }}</mat-label>
+                    <input matInput [formControlName]="j" />
+                </mat-form-field>
+                <button mat-icon-button type="button" color="warn" (click)="removeOption(j)">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </div>
+            <button mat-raised-button (click)="createOption(questionIndex)">Add Choise</button>
+        </div>
+    </ng-container>
+    <ng-template #optionsPreview>
+        @if(questionType === 'multiple_choice') {
+            <mat-radio-group class="options">
+                <mat-radio-button *ngFor="let option of getOptions().controls" [value]="option.value">
+                    {{ option.value }}
+                </mat-radio-button>
+            </mat-radio-group>
+        } @else if (questionType === 'checkbox') {
+            <div *ngFor="let option of getOptions().controls" class="options">
+                <mat-checkbox>{{ option.value }}</mat-checkbox>
+            </div>
+        } @else if (questionType === 'dropdown') {
+            <ol>
+                <li *ngFor="let option of getOptions().controls">{{ option.value }}</li>
+            </ol>
+        }
+    </ng-template>
+    @if (questionType === 'textarea') {
+        <mat-form-field appearance="fill" class="full-width">
+            <mat-label>Your Answer</mat-label>
+            <textarea matInput placeholder="Answer here..." disabled></textarea>
+        </mat-form-field>
+    } @else if (questionType === 'text' || questionType === 'date' || questionType === 'time') {
+        <mat-form-field appearance="fill" class="full-width">
+            <mat-label>Your Answer</mat-label>
+            <input matInput [type]="questionType.toString()" disabled />
+        </mat-form-field>
+    }
+</div>

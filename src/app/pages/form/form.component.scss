@@ -82,6 +82,14 @@
                 margin-right: 20px;
             }
         }
+
+        .form-actions {
+            button {
+                &:first-child {
+                    margin-right: 20px;
+                }
+            }
+        }
     }
 }
 

@@ -1,0 +1,60 @@
+<div [formGroup]="question" class="questions">
+    <mat-card class="questions-card">
+        <mat-card-content>
+            <ng-container *ngIf="question.value['isEditing']; else questionPreview">
+                <mat-form-field appearance="fill">
+                    <mat-label>Question Text</mat-label>
+                    <input matInput formControlName="question_text" required (focus)="emitActiveIndex(index || null)" />
+                    <mat-error *ngIf="question.get('question_text')?.invalid && question.get('question_text')?.touched">
+                        Question text is required.
+                    </mat-error>
+                </mat-form-field>
+            </ng-container>
+            <ng-template #questionPreview>
+                <p>{{ question.value['question_text'] }}
+                    @if(question.value['required']) {
+                        <span class="required">*</span>
+                    }
+                </p>
+            </ng-template>
+
+            @if(question.value['isEditing']) {
+                <mat-form-field appearance="fill">
+                    <mat-label>Question Type</mat-label>
+                    <mat-select formControlName="question_type" (selectionChange)="onTypeChange($event)">
+                        <mat-option *ngFor="let type of types" [value]="type.value">{{ type.viewValue }}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            }
+            <app-options
+                [question]="question"
+                [questionType]="selectedQuestionType"
+                [questionIndex]="index"
+                (emittedIndex)="newOptions($event)"
+            ></app-options>
+        </mat-card-content>
+        <mat-card-footer>
+            <div>
+                @if(question.value['isEditing']) {
+                    <button mat-icon-button color="accent" (click)="emitSaveQuestion(question)">
+                        <mat-icon>
+                            check
+                        </mat-icon>
+                    </button>
+                } @else {
+                    <button mat-icon-button color="accent" (click)="handleEditQuestion(question)">
+                        <mat-icon>
+                            edit
+                        </mat-icon>
+                    </button>
+                }
+                <button mat-icon-button color="warn" (click)="emitDeleteQuestion(index)">
+                    <mat-icon>
+                        delete
+                    </mat-icon>
+                </button>
+            </div>
+            <mat-slide-toggle labelPosition="before" (change)="toggleRequired($event)">Required</mat-slide-toggle>
+        </mat-card-footer>
+    </mat-card>
+</div>

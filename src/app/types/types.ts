@@ -4,3 +4,8 @@ export enum SortOptions {
     MODIFIED = 'modified',
     TITLE = 'title'
 }
+
+export interface Type {
+    value: string;
+    viewValue: string;
+}
