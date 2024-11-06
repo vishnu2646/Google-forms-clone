@@ -1,7 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output, SimpleChanges } from '@angular/core';
 import { FormArray, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { ButtonModule, CheckboxModule, IconModule, InputModule, RadioModule, SelectModule } from '../../sharedComponents/matModules';
+import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatButtonModule } from '@angular/material/button';
+import { MatSelectModule } from '@angular/material/select';
 
 @Component({
     selector: 'app-options',
@@ -9,12 +14,12 @@ import { ButtonModule, CheckboxModule, IconModule, InputModule, RadioModule, Sel
     imports: [
         CommonModule,
         ReactiveFormsModule,
-        InputModule,
-        IconModule,
-        RadioModule,
-        CheckboxModule,
-        ButtonModule,
-        SelectModule
+        MatInputModule,
+        MatIconModule,
+        MatRadioModule,
+        MatCheckboxModule,
+        MatButtonModule,
+        MatSelectModule
     ],
     templateUrl: './options.component.html',
     styleUrl: './options.component.scss'
@@ -40,7 +45,6 @@ export class OptionsComponent {
     public ngOnChanges(changes: SimpleChanges): void {
         if (changes['question']) {
             this.question = changes['question']?.currentValue;
-            console.log(this.question);
         } else if (changes['questionType']) {
             this.questionType = changes['questionType']?.currentValue;
         } else if (changes['questionIndex']) {

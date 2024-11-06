@@ -11,6 +11,7 @@ import { Type } from '../../types/types';
 import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { OptionsComponent } from '../options/options.component';
 import { MatSelectModule } from '@angular/material/select';
+import { MatInputModule } from '@angular/material/input';
 
 @Component({
     selector: 'app-questioncard',
@@ -26,7 +27,8 @@ import { MatSelectModule } from '@angular/material/select';
         MatCheckboxModule,
         OptionsComponent,
         MatSelectModule,
-        MatSlideToggleModule
+        MatSlideToggleModule,
+        MatInputModule
     ],
     templateUrl: './questioncard.component.html',
     styleUrl: './questioncard.component.scss'
